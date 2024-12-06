@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image"; // Import Image from next/image
 import { FaCamera } from "react-icons/fa";
 import ContextMenu from "./ContextMenu";
+import PhotoLibrary from "./PhotoLibrary";
+import PhotoPicker from "./PhotoPicker";
 
 function Avatar({ type, image, setImage }) {
   const [hover, setHover] = useState(false);
@@ -11,6 +13,7 @@ function Avatar({ type, image, setImage }) {
     y: 0,
   });
   const [grabPhoto, setGrabPhoto] = useState(false);
+  const [showPhotoLibary,setShowPhotoLibary]=useState(false);
 
   const showContextMenu = (e) => {
     e.preventDefault();
@@ -58,6 +61,7 @@ function Avatar({ type, image, setImage }) {
   };
 
   return (
+    <>
     <div className="flex items-center justify-center">
       {type === "sm" && (
         <div className="relative h-10 w-10">
@@ -80,12 +84,14 @@ function Avatar({ type, image, setImage }) {
               hover ? "visible" : "hidden"
             }`}
             onClick={(e) => showContextMenu(e)}
+            id="context-opener"
           >
             <FaCamera
               className="text-2xl"
+              id="context-opener"
               onClick={(e) => showContextMenu(e)}
             />
-            <span onClick={(e) => showContextMenu(e)}>
+            <span onClick={(e) => showContextMenu(e)}  id="context-opener" >
               Change <br /> Profile <br /> Photo
             </span>
           </div>
@@ -94,6 +100,7 @@ function Avatar({ type, image, setImage }) {
           </div>
         </div>
       )}
+      </div>
       {isContextMenuVisible && (
         <ContextMenu
           options={contextMenuOptions}
@@ -102,16 +109,15 @@ function Avatar({ type, image, setImage }) {
           setContextMenu={setIsContextMenuVisible}
         />
       )}
-      {grabPhoto && (
-        <input
-          type="file"
-          id="photo-picker"
-          style={{ display: "none" }}
-          onChange={photoPickerChange}
-        />
+      {PhotoLibrary && (
+      <PhotoLibrary 
+      setImage={setImage}
+      hidePhotoLibary={setShowPhotoLibary}
+      />
       )}
-    </div>
-  );
+      {grabPhoto && <PhotoPicker onChange={photoPickerChange} /> }
+</> 
+ );
 }
 
 export default Avatar;
