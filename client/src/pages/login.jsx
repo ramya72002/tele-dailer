@@ -11,12 +11,12 @@ import { reducerCases } from "@/context/constants";
 
 
 function login() {
-  const router=useRouter()
+  const router=useRouter();
 
   const [{},dispatch]=useStateProvider();
 
   const handleLogin=async () =>{
-    const provider = new GoogleAuthProvider()
+    const provider = new GoogleAuthProvider();
     const {user:{displayName:name,email,photoURL:profileImage},
   } = await signInWithPopup(firebaseAuth, provider);
   try{ 

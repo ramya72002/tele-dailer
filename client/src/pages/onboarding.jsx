@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import Image from "next/image";
 import { useStateProvider } from "@/context/StateContext";
 
@@ -6,7 +6,7 @@ function Onboarding() {
   const [{userInfo}]=useStateProvider();
   const [name,setName]=useState(userInfo?.name||"");
   const [about,setAbout]=useState("");
-  const [iamge,setImage]=useState("/default_avatar.png");
+  const [image,setImage]=useState("/default_avatar.png");
 
   return (
     <div className="bg-panel-header-background h-screen w-screen text-white flex flex-col items-center justify-center">
@@ -26,7 +26,9 @@ function Onboarding() {
         <input name="About" state={about} setState={setAbout} label />
 
       </div>
-
+       <div>
+        <avatar type="xl" image = {image} setImage= {setImage}/>
+       </div>
     </div>
   );
 }
