@@ -51,13 +51,18 @@ function Avatar({ type, image, setImage }) {
 
   const photoPickerChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
+    const reader=new FileReader();
+    const data=document.createElement("img");
+     
       reader.onload = function (event) {
-        setImage(event.target.result);
-      };
+        data.src=event.target.result;
+        data.setAttribute("data-src",event.target.result);
+       };
       reader.readAsDataURL(file);
-    }
+      setTimeout(()=>{
+        setImage(data.src);
+      },100);
+ 
   };
 
   return (
