@@ -1,5 +1,6 @@
 import React from "react";
 import { IoClose } from "react-icons/io5";
+import Image from "next/image"; // Ensure you import the Image component if using Next.js
 
 function PhotoLibrary({ setPhoto, hidePhotoLibary }) {
   const images = [
@@ -22,6 +23,21 @@ function PhotoLibrary({ setPhoto, hidePhotoLibary }) {
           onClick={() => hidePhotoLibary(false)}
         >
           <IoClose className="h-10 w-10 cursor-pointer" />
+        </div>
+        <div className="grid grid-cols-3 justify-center items-center gap-16 p-20 w-full">
+          {images.map((image, index) => (
+            <div
+              key={index}
+              onClick={() => {
+                setImage(images[index]);
+                hidePhotoLibary(false);
+              }}
+             >
+              <div className="h-24 w-24 cursor-pointer relative">
+              <Image src={image} alt="avatar" fill />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -14,6 +14,9 @@ function Avatar({ type, image, setImage }) {
   });
   const [grabPhoto, setGrabPhoto] = useState(false);
   const [showPhotoLibary,setShowPhotoLibary]=useState(false);
+  const [showCapturePhoto,setShowCapturePhoto]=useState(false);
+
+
 
   const showContextMenu = (e) => {
     e.preventDefault();
@@ -33,8 +36,13 @@ function Avatar({ type, image, setImage }) {
   }, [grabPhoto]);
 
   const contextMenuOptions = [
-    { name: "Take Photo", callback: () => {} },
-    { name: "Choose From Library", callback: () => {} },
+    { name: "Take Photo", callback: () => {
+      setShowCapturePhoto(true);
+    },
+   },
+    { name: "Choose From Library", callback: () => {
+      setShowPhotoLibary(true);
+    } },
     {
       name: "Upload Photo",
       callback: () => {
@@ -114,6 +122,16 @@ function Avatar({ type, image, setImage }) {
           setContextMenu={setIsContextMenuVisible}
         />
       )}
+      {showCapturePhoto && (
+        <CapturePhoto setImage={setImage} hide={setShowCapturePhoto} />
+      )}
+      {showPhotoLibary && (
+      <PhotoLibrary
+      setImage={setImage}
+      hidePhotoLibrary={setShowPhotoLibary}  
+      />
+      )}
+
       {PhotoLibrary && (
       <PhotoLibrary 
       setImage={setImage}

@@ -13,11 +13,15 @@ import { reducerCases } from "@/context/constants";
 function login() {
   const router=useRouter();
 
-  const [{},dispatch]=useStateProvider();
+  const [{ userInfo, newUser }, dispatch] = useStateProvider();
+  useEffect(() => {
+  if (userInfo?.id && !newUser) router.push("/");
+  }, [userInfo, newUser]);
+
 
   const handleLogin=async () =>{
     const provider = new GoogleAuthProvider();
-    const {user:{displayName:name,email,photoURL:profileImage},
+    const {user:{displayName:name,email,photoUrl:profileImage},
   } = await signInWithPopup(firebaseAuth, provider);
   try{ 
     if(email){
@@ -31,9 +35,17 @@ function login() {
           type:reducerCases.SET_USER_INFO,userInfo:{
             name,email,profileImage,status:""
           }
-        })
+        });
 
         router.push("/onboarding");
+      }else{
+        const {id,name,email,profilePicture:profileImage,status}=data.data;
+        dispatch({
+          type:reducerCases.SET_USER_INFO,userInfo:{
+            id,name,email,profileImage,status,
+
+          },
+        });
       }
         }
   }catch(err){
