@@ -6,8 +6,10 @@ import { firebaseAuth } from "@/utils/FirebaseConfig";
 import { CHECK_USER_ROUTE } from "@/ptils/ApiRoutes";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useStateProvider } from "@/context/StateContext";
 function Main() {
 const router = useRouter()
+const [{userInfo,currentUser},dispatch]=useStateProvider();
 const [redirectLogin, setRedirectLogin] = useState(false);
 useEffect(()=>{
   if(redirectLogin) router.push("/login");
@@ -39,9 +41,9 @@ return(
   <>
 <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
     <ChatList />
-    {/* <Empty />
-    < */}
-    <Chat />
+    {
+      currentUser?<Chat />:<Empty/>
+    }
     </div>
 </>
 );
