@@ -9,12 +9,14 @@ import { useRouter } from "next/router";
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 import Chat from "./Chat/Chat";
-import { GET_MESSAGES_ROUTE } from "@/utils/ApiRoutes";
+import {io} from "socket.io-client";
 
 function Main() {
 const router = useRouter()
-const [{userInfo,currentUser},dispatch]=useStateProvider();
+const [{userInfo,currentChatUser},dispatch]=useStateProvider();
 const [redirectLogin, setRedirectLogin] = useState(false);
+coinst [socketEvent,setSocketEvent]=useState(false);
+const socket=useRef();
 
 useEffect(()=>{
   if(redirectLogin) router.push("/login");
@@ -42,6 +44,23 @@ onAuthStateChanged(firebaseAuth, async (currentUser) => {
     });
   }
 });
+
+useEffect(()=>{
+  if(userInfo){
+socket.current=io(HOST);
+socket.current.emit("add-user",userInfo.id);
+dispatch({type:reducerCases.SET_SOCKET,socket });
+  }
+},[userInfo]);
+
+useEffect(()=>{
+  if(userInfo){
+socket.current=io(HOST);
+socket.current.emit("add-user",userInfo.id);
+dispatch({type:reducerCases.SET_SOCKET,socket });
+  }
+},[userInfo]);
+
 
 useEffect(()=>{
   const getMessages=async()=>{

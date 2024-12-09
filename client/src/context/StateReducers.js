@@ -6,6 +6,7 @@ export const initialState ={
     contactPage:false,
     currentChatUser:undefined,
     messages:[],
+    socket:undefined,
 };
 const reducer=(state,action)=>{
     switch(action.type){
@@ -33,6 +34,11 @@ const reducer=(state,action)=>{
             return {
                 ...state,
                 messages:action.messages,
+            };
+        case reducerCases.SET_SOCKET:
+            return {
+                ...state,
+                socket:action.socket,
             };
         default:
             return state;

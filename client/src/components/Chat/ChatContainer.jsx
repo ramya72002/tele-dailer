@@ -1,5 +1,6 @@
 import React from "react";
 import { useStateProvider } from "../context/StateProvider"; // Assuming useStateProvider comes from a context
+import MessageStatus from "../common/MessageStatus";
 
 function ChatContainer() {
   const [{ messages, currentChatUser }, dispatch] = useStateProvider();
@@ -23,7 +24,7 @@ function ChatContainer() {
             >
               {message.type === "text" && (
                 <div
-                  className={`text-white px-2 py-[5px] text-sm rounded-md flex gap-2 ${
+                  className={`text-white px-2 py-[5px] text-sm rounded-md flex gap-2 items-end max-w-[45%] ${
                     message.senderId === currentChatUser.id
                       ? "bg-incoming-background"
                       : "bg-outgoing-background"
@@ -34,6 +35,14 @@ function ChatContainer() {
                     <span className="text-bubble-meta text-[11px] pt-1 min-w-fit">
                       {calculateTime(message.timestamp)}
                     </span>
+                    <span className="text-bubble-meta text-[11px] pt-1 min-w-fit">
+                        {
+                          message.senderId==getAdditionalUserInfo.id &&
+                           <MessageStatus
+                           MessageStatus={message.messageStatus} 
+                           />
+                        }                   
+                     </span>
                   </div>
                 </div>
               )}
