@@ -3,7 +3,7 @@ import {firebaseAuth} from "@/utils/FirebaseConfig";
 import axios from "axios";
 import {GoogleAuthProvider, signInWithPopup} from "firebase/auth";
 import Image from "next/image";
-import React from "react";
+import React ,{useEffect}from "react";
 import {FcGoogle} from "react-icons/fc";
 import { useRouter } from "next/router";
 import { useStateProvider } from "@/context/StateContext";
@@ -33,7 +33,7 @@ function login() {
 
         dispatch({
           type:reducerCases.SET_USER_INFO,userInfo:{
-            name,email,profileImage,status:""
+            name,email,profileImage,status:"",
           }
         });
 

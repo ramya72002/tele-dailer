@@ -23,20 +23,25 @@ onAuthStateChanged(firebaseAuth, async (currentUser) => {
     if(!data.status) {
     router.push("/login")
     }
+    if(data?.data){
     const {id,name,email,profilePicture:profileImage,status}=data.data;
 
     dispatch({
-      type:reducerCases.SET_USER_INFO,userInfo:{
+      type:reducerCases.SET_USER_INFO,
+      userInfo:{
         id,name,email,profileImage,status,
 
       },
     });
+  }
 });
 return(
   <>
 <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
     <ChatList />
-    <Empty />
+    {/* <Empty />
+    < */}
+    <Chat />
     </div>
 </>
 );
