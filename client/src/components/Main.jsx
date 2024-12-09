@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import ChatList from "./Chatlist/ChatList";
 import Empty from "./Empty";
 import {onAuthStateChanged } from "firebase/auth";
@@ -7,10 +7,15 @@ import { CHECK_USER_ROUTE } from "@/ptils/ApiRoutes";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useStateProvider } from "@/context/StateContext";
+import { reducerCases } from "@/context/constants";
+import Chat from "./Chat/Chat";
+import { GET_MESSAGES_ROUTE } from "@/utils/ApiRoutes";
+
 function Main() {
 const router = useRouter()
 const [{userInfo,currentUser},dispatch]=useStateProvider();
 const [redirectLogin, setRedirectLogin] = useState(false);
+
 useEffect(()=>{
   if(redirectLogin) router.push("/login");
 },[redirectLogin]);
@@ -37,6 +42,20 @@ onAuthStateChanged(firebaseAuth, async (currentUser) => {
     });
   }
 });
+
+useEffect(()=>{
+  const getMessages=async()=>{
+    const {data:{messages}}=await  axios.get(`
+      ${GET_MESSAGES_ROUTE}/${userInfo.id}/${currentChatUser.id}`
+    );
+    dispatch({type:reducerCases.SET_MESSAGES,messages});
+  }
+  if(currentChatUser?.id){
+    getMessages();
+
+  }
+},[currentChatUser])
+
 return(
   <>
 <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
