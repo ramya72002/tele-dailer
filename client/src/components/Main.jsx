@@ -61,6 +61,20 @@ dispatch({type:reducerCases.SET_SOCKET,socket });
   }
 },[userInfo]);
 
+useEffect(() => {
+  if (socket.current && !socketEvent) {
+    socket.current.on("msg-recieve",(data)=>{
+      dispatch({
+        type:reducerCases.ADD_MESSAGE,
+        newMessage:{
+          ...data.message, 
+        },
+      })
+    })
+    setSocketEvent(true)
+  }
+}, [socket.current])
+
 
 useEffect(()=>{
   const getMessages=async()=>{

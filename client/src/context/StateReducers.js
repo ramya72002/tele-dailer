@@ -40,6 +40,12 @@ const reducer=(state,action)=>{
                 ...state,
                 socket:action.socket,
             };
+
+            case reducerCases.ADD_MESSAGE:
+                return {
+                 ...state,
+                 message:[...state.message, action.newMessage],
+                };
         default:
             return state;
     }

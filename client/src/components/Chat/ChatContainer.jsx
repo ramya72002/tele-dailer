@@ -48,6 +48,7 @@ function ChatContainer() {
               )}
             </div>
           ))}
+          {message.type==="image" && <ImageMessage message={message} />}
         </div>
       </div>
       </div>
