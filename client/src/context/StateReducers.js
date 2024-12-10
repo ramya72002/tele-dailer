@@ -7,6 +7,9 @@ export const initialState ={
     currentChatUser:undefined,
     messages:[],
     socket:undefined,
+    messagesSearch:false,
+    userContacts:[],
+    onlineUsers:[],
 };
 const reducer=(state,action)=>{
     switch(action.type){
@@ -41,11 +44,27 @@ const reducer=(state,action)=>{
                 socket:action.socket,
             };
 
-            case reducerCases.ADD_MESSAGE:
-                return {
-                 ...state,
-                 message:[...state.message, action.newMessage],
-                };
+        case reducerCases.ADD_MESSAGE:
+            return {
+                ...state,
+                message:[...state.message, action.newMessage],
+            };
+    
+        case reducerCases.SET_MESSAGE_SEARCH:
+            return {
+                ...state,
+                messagesSearch:!state.messagesSearch,
+            };
+        case reducerCases.SET_USER_CONTACTS:
+            return {
+                ...state,
+                userContacts:action.userContacts,
+            };
+        case reducerCases.SET_ONLINE_USERS:
+            return {
+                ...state,
+                onlineUsers:action.onlineUsers,
+            };
         default:
             return state;
     }

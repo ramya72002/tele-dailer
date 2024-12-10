@@ -1,6 +1,12 @@
 import React from "react";
-import { useStateProvider } from "../context/StateProvider"; // Assuming useStateProvider comes from a context
+import { useStateProvider } from "@/context/StateContext"
+import { calculateTime} from "@/utils/CalculateTime"
+
 import MessageStatus from "../common/MessageStatus";
+import ImageMessage from "./ImageMessage";
+import dynamic from "next/dynamic";
+const VoiceMessage =dynamic (()=>import("./VoiceMessage"),{ssr:false});
+
 
 function ChatContainer() {
   const [{ messages, currentChatUser }, dispatch] = useStateProvider();
@@ -46,9 +52,12 @@ function ChatContainer() {
                   </div>
                 </div>
               )}
-            </div>
-          ))}
+           
           {message.type==="image" && <ImageMessage message={message} />}
+          {message.type==="audio" && <VoiceMessage  message={message} />}
+          </div>
+        ))}
+
         </div>
       </div>
       </div>

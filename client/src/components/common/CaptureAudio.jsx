@@ -58,6 +58,7 @@ function CaptureAudio({ hide }) {
     setCurrentPlaybackTime(0);
     setTotalDuration(0);
     setIsRecording(true);
+    setRecordedAudio(nulll);
 
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -86,12 +87,56 @@ function CaptureAudio({ hide }) {
 
   // Stop recording
   const handleStopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      waveform.stop();
+
+    if (mediaRecorderRed.current && isRecording) {
+    
+    mediaRecorderRed.current.stop();
+    
+    setIsRecording(false);
+    
+    waveform.stop();
+    
+    const audioChunks = [];
+    
+  //   mediaRecorderRed.current.addEventListener("dataavailable", (event) => 
+  //     audioChunks.push(event.data); 
+  // });
+    
+    mediaRecorderRed.current.addEventListener("stop", () => {
+    
+    const audioBlob = new Blob (audioChunks, { type: "audio/mp3" });
+    
+    const audioFile = new File([audioBlob], "recording.mp3"); setRenderedAudio (audioFile);
+    
+    });
+    
     }
-  };
+    
+    };
+
+  //somthing missing here
+  useEffect(() => {
+
+    if (recordedAudio) {
+    
+    const updatePlaybackTime = () => {
+    
+    setCurrentPlaybackTime(recordedAudio.currentTime);
+    
+    };
+    
+    recordedAudio.addEventListener("timeupdate", updatePlaybackTime);
+    
+    return () => {
+    
+    recordedAudio.removeEventListener("timeupdate", updatePlaybackTime)
+    
+    };
+    
+    
+    }
+    
+    }, [recordedAudio]);
 
   // Play recording
   const handlePlayRecording = () => {
