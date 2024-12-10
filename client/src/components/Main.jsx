@@ -10,10 +10,11 @@ import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 import Chat from "./Chat/Chat";
 import {io} from "socket.io-client";
+import SearchMessages from "./Chat/SearchMessages";
 
 function Main() {
 const router = useRouter()
-const [{userInfo,currentChatUser},dispatch]=useStateProvider();
+const [{userInfo,currentChatUser,messagesSearch},dispatch]=useStateProvider();
 const [redirectLogin, setRedirectLogin] = useState(false);
 coinst [socketEvent,setSocketEvent]=useState(false);
 const socket=useRef();
@@ -61,6 +62,20 @@ dispatch({type:reducerCases.SET_SOCKET,socket });
   }
 },[userInfo]);
 
+useEffect(() => {
+  if (socket.current && !socketEvent) {
+    socket.current.on("msg-recieve",(data)=>{
+      dispatch({
+        type:reducerCases.ADD_MESSAGE,
+        newMessage:{
+          ...data.message, 
+        },
+      })
+    })
+    setSocketEvent(true)
+  }
+}, [socket.current])
+
 
 useEffect(()=>{
   const getMessages=async()=>{
@@ -73,15 +88,25 @@ useEffect(()=>{
     getMessages();
 
   }
-},[currentChatUser])
+},[currentChatUser]);
 
 return(
   <>
 <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
     <ChatList />
     {
-      currentUser?<Chat />:<Empty/>
-    }
+      currentChatUser?(
+
+        <div className={messagesSearch ? "grid grid-cols-2" : "grid-cols-2"}>
+        
+   
+        <Chat />
+        {console.log({messagesSearch})}
+        
+        {messagesSearch && <SearchMessages />}
+        </div>):(
+    <Empty/>
+    )}
     </div>
 </>
 );
