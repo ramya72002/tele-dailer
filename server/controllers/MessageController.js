@@ -159,8 +159,9 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
         messageStatusChange.push(msg.id);
       }
 
-      if (!users.get(calculatedId)) {
-        const { message, sender, reciever, messageStatus ,createdAt,senderId,recieverId} = msg;
+      
+        const { id, type, message, sender, reciever, messageStatus ,createdAt,senderId,recieverId} = msg;
+        if (!users.get(calculatedId)) {
         let user={
             messageId:id,
             type,

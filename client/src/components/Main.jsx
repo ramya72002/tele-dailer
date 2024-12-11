@@ -14,7 +14,7 @@ import SearchMessages from "./Chat/SearchMessages";
 
 function Main() {
 const router = useRouter()
-const [{userInfo,currentChatUser,messagesSearch},dispatch]=useStateProvider();
+const [{userInfo,currentChatUser,messagesSearch, videoCall, voiceCall,incomingVoiceCall,incomingVideoCall},dispatch]=useStateProvider();
 const [redirectLogin, setRedirectLogin] = useState(false);
 coinst [socketEvent,setSocketEvent]=useState(false);
 const socket=useRef();
@@ -22,6 +22,7 @@ const socket=useRef();
 useEffect(()=>{
   if(redirectLogin) router.push("/login");
 },[redirectLogin]);
+};
 
 
 onAuthStateChanged(firebaseAuth, async (currentUser) => {
@@ -91,15 +92,28 @@ useEffect(()=>{
 },[currentChatUser]);
 
 return(
-  <>
-<div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
+ <>
+ {
+  videoCall && (
+  <div className="h-screen w-screen max-h-full overflow-hidden">
+    <VideoCall />
+  </div>
+ )}
+
+{
+  voiceCall && (
+  <div className="h-screen w-screen max-h-full overflow-hidden">
+    <VoiceCall />
+  </div>
+ )}
+
+ {
+  !videoCall && !voiceCall && (
+  <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
     <ChatList />
-    {
-      currentChatUser?(
+    {currentChatUser?(
 
         <div className={messagesSearch ? "grid grid-cols-2" : "grid-cols-2"}>
-        
-   
         <Chat />
         {console.log({messagesSearch})}
         
@@ -108,7 +122,8 @@ return(
     <Empty/>
     )}
     </div>
+)}
 </>
-);
-}
+  
+)
 export default Main;
