@@ -95,6 +95,11 @@ useEffect(() => {
     socket.current.on("video-call-rejected", () => {
       dispatch({ type: reducerCases.END_CALL });
     });
+    socket.current.on("onilne-users", (onlineUsers) => {
+      dispatch({ type: reducerCases.SET_ONLINE_USERS ,
+        onlineUsers,
+      });
+    });
 
     setSocketEvent(true);
   }

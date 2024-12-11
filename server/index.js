@@ -32,7 +32,28 @@ io.on("connection",(socket)=>{
     global.chatSocket=socket;
     socket.on("add-user",(userId)=>{
         onlineUsers.set(userId,socket.id);
-    });
+        socket.broadcast.emit("online-users", {
+
+            onlineUsers: Array.from(onlineUsers.keys()), 
+            
+            });
+            
+            });
+            
+            socket.on("signout", (id) => {
+            
+            onlineUsers.delete(id);
+            
+            socket.broadcast.emit("online-users", {
+            
+            onlineUsers: Array.from(onlineUsers.keys()),
+            
+            });
+            
+            });
+
+
+
     socket.on("send-msg", (data)=>{
         const sendUserSocket = onlineUsers.get(data.to);
         if(sendUserSocket) {
@@ -43,6 +64,10 @@ io.on("connection",(socket)=>{
         }
     });
 });
+
+
+
+
 socket.on("outgoing-video-call", (data) => {
 
     const sendUserSocket = onlineUsers.get(data.to);
@@ -60,6 +85,7 @@ socket.on("outgoing-video-call", (data) => {
     });
     
     }
+});
     
  
     
