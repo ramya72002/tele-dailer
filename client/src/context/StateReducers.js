@@ -16,8 +16,6 @@ export const initialState ={
     incomingVoiceCall:undefined,
     incomingVideoCall:undefined,
 
-
-
 };
 
 const reducer=(state,action)=>{

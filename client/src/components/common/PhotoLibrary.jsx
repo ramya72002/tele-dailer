@@ -2,7 +2,7 @@ import React from "react";
 import { IoClose } from "react-icons/io5";
 import Image from "next/image"; // Ensure you import the Image component if using Next.js
 
-function PhotoLibrary({ setPhoto, hidePhotoLibary }) {
+function PhotoLibrary({ setImage, hidePhotoLibary }) {
   const images = [
     "/avatars/1.png",
     "/avatars/2.png",
@@ -34,7 +34,7 @@ function PhotoLibrary({ setPhoto, hidePhotoLibary }) {
               }}
              >
               <div className="h-24 w-24 cursor-pointer relative">
-              <Image src={image} alt="avatar" fill />
+              <Image src={image} alt="avatar" fill/>
               </div>
             </div>
           ))}

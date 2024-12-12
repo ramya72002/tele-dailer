@@ -9,7 +9,6 @@ import { useRouter } from "next/router";
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 
-
 function login() {
   const router=useRouter();
 
@@ -34,7 +33,7 @@ function login() {
         dispatch({
           type:reducerCases.SET_USER_INFO,userInfo:{
             name,email,profileImage,status:"",
-          }
+          },
         });
 
         router.push("/onboarding");
@@ -46,6 +45,7 @@ function login() {
 
           },
         });
+        router.push("/")
       }
         }
   }catch(err){

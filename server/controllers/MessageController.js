@@ -26,7 +26,7 @@ export const addMessage = async (req, res, next) => {
   }
 };
 
-export const getMessage = async (req, res, next) => {
+export const getMessages = async (req, res, next) => {
   try {
     const prisma = getPrismaInstance();
     const { from, to } = req.params;

@@ -1,12 +1,16 @@
+import Input from "@/components/common/Input";
 import React,{useState,useEffect} from "react";
 import Image from "next/image";
 import { useStateProvider } from "@/context/StateContext";
+import { ONBOARD_USER_ROUTE } from "@/utils/ApiRoutes";
 import Avatar from "@/components/common/Avatar";
 import { useRouter } from "next/router";
+import axios from "axios";
+
 
 function Onboarding() {
   const router=useRouter();
-  const [{userInfo,newUser},dispatch]=useStateProvider();
+  const [{userInfo, newUser},dispatch]=useStateProvider();
   const [name,setName]=useState(userInfo?.name||"");
   const [about,setAbout]=useState("");
   const [image,setImage]=useState("/default_avatar.png");
@@ -67,8 +71,8 @@ const validateDetails=()=>{
       <h2 className="text-2xl">Create your profile</h2>
       <div className="flex gap-6 mt-6"></div>
       <div className="flex flex-col items-center justify-center mt-5 gap-6">
-        <input name="Display Name" state={name} setState={setName} label />
-        <input name="About" state={about} setState={setAbout} label />
+        <Input name="Display Name" state={name} setState={setName} label />
+        <Input name="About" state={about} setState={setAbout} label />
         <div className="flex items-center justify-center">
           <button className="flex items-center justify-center gap-7 bg-search-input-container-background p-5 rounded-lg"
           onClick={OnboardingHandler}

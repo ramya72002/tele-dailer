@@ -3,6 +3,7 @@ import Image from "next/image"; // Import Image from next/image
 import { FaCamera } from "react-icons/fa";
 import ContextMenu from "./ContextMenu";
 import PhotoLibrary from "./PhotoLibrary";
+import CapturePhoto from "./CapturePhoto";
 import PhotoPicker from "./PhotoPicker";
 
 function Avatar({ type, image, setImage }) {
@@ -16,21 +17,21 @@ function Avatar({ type, image, setImage }) {
   const [showPhotoLibary,setShowPhotoLibary]=useState(false);
   const [showCapturePhoto,setShowCapturePhoto]=useState(false);
 
-
-
   const showContextMenu = (e) => {
     e.preventDefault();
-    setIsContextMenuVisible(true);
     setContextMenuCoordinates({ x: e.pageX, y: e.pageY });
+    setIsContextMenuVisible(true);
   };
 
   useEffect(() => {
     if (grabPhoto) {
       const data = document.getElementById("photo-picker");
       data.click();
-      document.body.onfocus = () => {
-        setTimeout(() => {}, 1000);
-        setGrabPhoto(false);
+      document.body.onfocus = (e) => {
+        setTimeout(() => {
+          setGrabPhoto(false);
+
+        }, 1000);
       };
     }
   }, [grabPhoto]);
@@ -93,8 +94,8 @@ function Avatar({ type, image, setImage }) {
           onMouseLeave={() => setHover(false)}
         >
           <div
-            className={`z-10 bg-photopicker-overlay-background h-60 w-60 absolute top-0 left-0 flex items-center rounded-full justify-center flex-col text-center gap-2 ${
-              hover ? "visible" : "hidden"
+            className={`z-10 bg-photopicker-overlay-background h-60 w-60 absolute top-0 left-0 flex items-center rounded-full justify-center flex-col text-center gap-2 
+              ${hover ? "visible" : "hidden"
             }`}
             onClick={(e) => showContextMenu(e)}
             id="context-opener"
@@ -132,12 +133,12 @@ function Avatar({ type, image, setImage }) {
       />
       )}
 
-      {PhotoLibrary && (
+      {/* {PhotoLibrary && (
       <PhotoLibrary 
       setImage={setImage}
       hidePhotoLibary={setShowPhotoLibary}
       />
-      )}
+      )} */}
       {grabPhoto && <PhotoPicker onChange={photoPickerChange} /> }
 </> 
  );
