@@ -11,11 +11,11 @@ export const addMessage = async (req, res, next) => {
       const newMessage = await prisma.messages.create({
         data: {
           message,
-          sender: { connect: { id: parseInt(from) } },
-          reciever: { connect: { id: parseInt(to) } },
+          sender: { connect: { id: from } },
+          receiver: { connect: { id: to } },
           messageStatus: getUser ? "delivered" : "sent",
         },
-        include: { sender: true, reciever: true },
+        include: { sender: true, receiver: true },
       });
 
       return res.status(201).send({ message: newMessage });
@@ -26,6 +26,7 @@ export const addMessage = async (req, res, next) => {
   }
 };
 
+
 export const getMessages = async (req, res, next) => {
   try {
     const prisma = getPrismaInstance();
@@ -34,33 +35,26 @@ export const getMessages = async (req, res, next) => {
     const messages = await prisma.messages.findMany({
       where: {
         OR: [
-          { senderId: parseInt(from), recieverId: parseInt(to) },
-          { senderId: parseInt(to), recieverId: parseInt(from) },
+          { senderId: from, receiverId: to },
+          { senderId: to, receiverId: from },
         ],
       },
-      orderBy: { id: "asc" },
+      orderBy: { createdAt: "asc" },
     });
 
-    const unreadMessages = [];
+    const unreadMessages = messages
+      .filter(
+        (message) =>
+          message.messageStatus !== "read" && message.senderId === to
+      )
+      .map((message) => message.id);
 
-    messages.forEach((message, index) => {
-      if (
-        message.messageStatus !== "read" &&
-        message.senderId === parseInt(to)
-      ) {
-        messages[index].messageStatus = "read";
-        unreadMessages.push(message.id);
-      }
-    });
-
-    await prisma.messages.updateMany({
-      where: { 
-        id: { in: unreadMessages } 
-      },
-      data: { messageStatus: "read" 
-
-      },
-    });
+    if (unreadMessages.length > 0) {
+      await prisma.messages.updateMany({
+        where: { id: { in: unreadMessages } },
+        data: { messageStatus: "read" },
+      });
+    }
 
     return res.status(200).json({ messages });
   } catch (err) {
@@ -68,11 +62,12 @@ export const getMessages = async (req, res, next) => {
   }
 };
 
+
 export const addImageMessage = async (req, res, next) => {
   try {
     if (req.file) {
       const date = Date.now();
-      const fileName = "uploads/images/" + date + req.file.originalname;
+      const fileName = `uploads/images/${date}-${req.file.originalname}`;
       renameSync(req.file.path, fileName);
 
       const prisma = getPrismaInstance();
@@ -82,8 +77,8 @@ export const addImageMessage = async (req, res, next) => {
         const message = await prisma.messages.create({
           data: {
             message: fileName,
-            sender: { connect: { id: parseInt(from) } },
-            reciever: { connect: { id: parseInt(to) } },
+            sender: { connect: { id: from } },
+            receiver: { connect: { id: to } },
             type: "image",
           },
         });
@@ -98,11 +93,12 @@ export const addImageMessage = async (req, res, next) => {
   }
 };
 
+
 export const addAudioMessage = async (req, res, next) => {
   try {
     if (req.file) {
       const date = Date.now();
-      const fileName = "uploads/recordings/" + date + req.file.originalname;
+      const fileName = `uploads/recordings/${date}-${req.file.originalname}`;
       renameSync(req.file.path, fileName);
 
       const prisma = getPrismaInstance();
@@ -112,8 +108,8 @@ export const addAudioMessage = async (req, res, next) => {
         const message = await prisma.messages.create({
           data: {
             message: fileName,
-            sender: { connect: { id: parseInt(from) } },
-            reciever: { connect: { id: parseInt(to) } },
+            sender: { connect: { id: from } },
+            receiver: { connect: { id: to } },
             type: "audio",
           },
         });
@@ -128,20 +124,21 @@ export const addAudioMessage = async (req, res, next) => {
   }
 };
 
+
 export const getInitialContactsWithMessages = async (req, res, next) => {
   try {
-    const userId = parseInt(req.params.from);
+    const userId = req.params.from;
     const prisma = getPrismaInstance();
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
         sentMessages: {
-          include: { reciever: true, sender: true },
+          include: { receiver: true, sender: true },
           orderBy: { createdAt: "desc" },
         },
-        recievedMessages: {
-          include: { reciever: true, sender: true },
+        receivedMessages: {
+          include: { receiver: true, sender: true },
           orderBy: { createdAt: "desc" },
         },
       },
@@ -149,7 +146,7 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
 
     const messages = [
       ...user.sentMessages,
-      ...user.recievedMessages,
+      ...user.receivedMessages,
     ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     const users = new Map();
@@ -157,61 +154,50 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
 
     messages.forEach((msg) => {
       const isSender = msg.senderId === userId;
-      const calculatedId = isSender ? msg.recieverId : msg.senderId;
+      const partnerId = isSender ? msg.receiverId : msg.senderId;
 
       if (msg.messageStatus === "sent") {
         messageStatusChange.push(msg.id);
       }
 
-      
-        const { id, type, message, sender, reciever, messageStatus ,createdAt,senderId,recieverId} = msg;
-        if (!users.get(calculatedId)) {
-        let user={
-            messageId:id,
-            type,
-            message,
-            messageStatus,
-            createdAt,
-            senderId,
-            recieverId,
-
-        };
-        if(isSender){
-            user={
-                ...user,...msg.reciever,totalUnreadMessages:0,
+      const { id, type, message, messageStatus, createdAt } = msg;
+      if (!users.has(partnerId)) {
+        const partnerData = isSender
+          ? { ...msg.receiver, totalUnreadMessages: 0 }
+          : {
+              ...msg.sender,
+              totalUnreadMessages: messageStatus !== "read" ? 1 : 0,
             };
-        }
-        else{
-            user={
-                ...user,...msg.sender,totalUnreadMessages:messageStatus!=="read"?1:0,
-            };
-
-        }
-        users.set(calculatedId, {...user});
-      
-      } else if (msg.messageStatus !== "read" && !isSender) {
-        const user = users.get(calculatedId);
-        users.set(calculatedId, {
-          ...user,
-          totalUnreadMessages: user.totalUnreadMessages + 1,
+        users.set(partnerId, {
+          id,
+          type,
+          message,
+          messageStatus,
+          createdAt,
+          ...partnerData,
+        });
+      } else if (!isSender && msg.messageStatus !== "read") {
+        const userData = users.get(partnerId);
+        users.set(partnerId, {
+          ...userData,
+          totalUnreadMessages: userData.totalUnreadMessages + 1,
         });
       }
     });
 
-    if(messageStatusChange.length){
-        await prisma.messages.updateMany({
-            where: { id: { in: messageStatusChange } },
-            data: { messageStatus: "delivered" },
-          });
-      
-          return res.status(200).json({ users: Array.from(users.values()),
-            onlineUsers:Array.from(onlineUsers.keys()),
-           });
-        
+    if (messageStatusChange.length > 0) {
+      await prisma.messages.updateMany({
+        where: { id: { in: messageStatusChange } },
+        data: { messageStatus: "delivered" },
+      });
     }
 
-
+    return res.status(200).json({
+      users: Array.from(users.values()),
+      onlineUsers: Array.from(onlineUsers.keys()),
+    });
   } catch (err) {
     next(err);
   }
 };
+

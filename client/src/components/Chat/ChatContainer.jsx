@@ -43,7 +43,7 @@ function ChatContainer() {
                     </span>
                     <span className="text-bubble-meta text-[11px] pt-1 min-w-fit">
                         {
-                          message.senderId==getAdditionalUserInfo.id &&
+                          message.senderId==currentChatUser.id &&
                            <MessageStatus
                            MessageStatus={message.messageStatus} 
                            />

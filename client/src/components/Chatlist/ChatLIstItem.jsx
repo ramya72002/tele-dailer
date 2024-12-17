@@ -11,7 +11,7 @@ function ChatLIstItem({ data, isContactsPage = false }) {
   const [{ userInfo, currentChatUser }, dispatch] = useStateProvider();
 
   const handleContactClick = () => {
-    if (!isContactsPage) {
+    if (currentChatUser?.id===data) {
       dispatch({
         type: reducerCases.CHANGE_CURRENT_CHAT_USER,
         user: {
