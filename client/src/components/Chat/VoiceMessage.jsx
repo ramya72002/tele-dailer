@@ -140,7 +140,7 @@ function VoiceMessage({message}) {
 
 <div className="flex gap-1">
 
-I <span>{calculateTime(message.createdAt)}</span>
+<span>{calculateTime(message.createdAt)}</span>
 
 {
   message.senderId===userInfo.id && (<MessageStatus messageStatus={message.messageStatus}/>

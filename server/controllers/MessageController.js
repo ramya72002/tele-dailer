@@ -26,7 +26,7 @@ export const addMessage = async (req, res, next) => {
   }
 };
 
-export const getMessage = async (req, res, next) => {
+export const getMessages = async (req, res, next) => {
   try {
     const prisma = getPrismaInstance();
     const { from, to } = req.params;
@@ -54,8 +54,12 @@ export const getMessage = async (req, res, next) => {
     });
 
     await prisma.messages.updateMany({
-      where: { id: { in: unreadMessages } },
-      data: { messageStatus: "read" },
+      where: { 
+        id: { in: unreadMessages } 
+      },
+      data: { messageStatus: "read" 
+
+      },
     });
 
     return res.status(200).json({ messages });
@@ -159,8 +163,9 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
         messageStatusChange.push(msg.id);
       }
 
-      if (!users.get(calculatedId)) {
-        const { message, sender, reciever, messageStatus ,createdAt,senderId,recieverId} = msg;
+      
+        const { id, type, message, sender, reciever, messageStatus ,createdAt,senderId,recieverId} = msg;
+        if (!users.get(calculatedId)) {
         let user={
             messageId:id,
             type,

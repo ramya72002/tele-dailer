@@ -7,4 +7,4 @@ export const StateProvider=({initialState,reducer,children})=>(
 
 );
 
-export const useStateProvider=()=>useContext(StateContext);
+export const useStateProvider= () => useContext(StateContext);

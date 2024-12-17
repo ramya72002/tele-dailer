@@ -83,13 +83,12 @@ function MessageBar() {
   const sendMessage = async () => {
     try {
       const { data } = await axios.post(ADD_MESSAGE_ROUTE, {
-        to: currentChatUser?.id,
+        to: currentChatUser.id,
         from: userInfo?.id,
         message,
       });
-
       socket.current.emit("send-msg", {
-        to: currentChatUser?.id,
+        to: currentChatUser.id,
         from: userInfo?.id,
         message: data.message,
       });
@@ -150,7 +149,7 @@ function MessageBar() {
               type="text"
               placeholder="Type a message"
               className="bg-input-background text-sm focus:outline-none text-white h-10 rounded-lg px-5 py-4 w-full"
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={e => setMessage(e.target.value)}
               value={message}
             />
           </div>
