@@ -15,7 +15,7 @@ function ContactsList() {
   useEffect(() => {
     if (searchTerm.length) {
       const filteredData = {};
-      Objects.keys(allContacts).forEach((key)=>{
+      Object.keys(allContacts).forEach((key)=>{
         filteredData[key] = allContacts[key].filter((obj)=>
           obj.name.toLowerCase().includes(searchTerm.toLowerCase()));
       });
@@ -33,7 +33,7 @@ function ContactsList() {
         } = await axios.get(GET_ALL_CONTACTS);
 
         setAllContacts(users); 
-        setSearchContacts(users)
+        setSearchContacts(users);
       } catch (err) {
         console.log(err);
       }
@@ -77,19 +77,19 @@ function ContactsList() {
         </div>
 
         {/* Contacts List */}
-        {Object.entries(allContacts).map(([initialLetter, userList]) => {
+        {Object.entries(searchContacts).map(([initialLetter, userList]) => {
 
           return ( 
             userList.length >0 && (
              <div key={Date.now() + initialLetter}>
               <div className="text-teal-light pl-10 py-5">{initialLetter}</div>
               {
-               userList.map(contact => {
+               userList.map((contact) => {
                return (<ChatLIstItem
                 data={contact}
-                isContactPage={true}
+                isContactsPage={true}
                 key={contact.id}
-               />) 
+               />);
               })
               }
               

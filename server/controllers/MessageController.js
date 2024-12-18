@@ -67,7 +67,7 @@ export const addImageMessage = async (req, res, next) => {
   try {
     if (req.file) {
       const date = Date.now();
-      const fileName = `uploads/images/${date}-${req.file.originalname}`;
+      let fileName = "uploads/images/"+date+req.file.originalname;
       renameSync(req.file.path, fileName);
 
       const prisma = getPrismaInstance();
@@ -98,7 +98,7 @@ export const addAudioMessage = async (req, res, next) => {
   try {
     if (req.file) {
       const date = Date.now();
-      const fileName = `uploads/recordings/${date}-${req.file.originalname}`;
+      const fileName = "uploads/recordings/"+date+req.file.originalname;
       renameSync(req.file.path, fileName);
 
       const prisma = getPrismaInstance();
@@ -154,33 +154,61 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
 
     messages.forEach((msg) => {
       const isSender = msg.senderId === userId;
-      const partnerId = isSender ? msg.receiverId : msg.senderId;
+      const calculatedId = isSender ? msg.receiverId : msg.senderId;
 
       if (msg.messageStatus === "sent") {
         messageStatusChange.push(msg.id);
       }
-
-      const { id, type, message, messageStatus, createdAt } = msg;
-      if (!users.has(partnerId)) {
-        const partnerData = isSender
-          ? { ...msg.receiver, totalUnreadMessages: 0 }
-          : {
-              ...msg.sender,
-              totalUnreadMessages: messageStatus !== "read" ? 1 : 0,
-            };
-        users.set(partnerId, {
-          id,
+      const{id,
+        type,message,messageStatus,
+        createdAt,senderId,receiverId,
+      }=msg;
+      // const { id, type, message, messageStatus, createdAt } = msg;
+      if (!users.has(calculatedId)) {
+       
+        let user={
+          messageId:id,
           type,
           message,
           messageStatus,
           createdAt,
-          ...partnerData,
-        });
+          senderId,
+          receiverId,
+        }
+        if(isSender){
+          user={
+            ...user,
+            ...msg.receiver,
+            totalUnreadMessages:0,
+          };
+        }else{
+          user={
+            ...user,
+            ...msg.sender,
+            totalUnreadMessages:messageStatus!=="read"?1:0,
+          };
+
+        }
+        users.set(calculatedId,{...user});
+        // const partnerData = isSender
+        //   ? { ...msg.receiver, totalUnreadMessages: 0 }
+        //   : {
+        //       ...msg.sender,
+        //       totalUnreadMessages: messageStatus !== "read" ? 1 : 0,
+        //     };
+        // users.set(calculatedId, {
+        //   id,
+        //   type,
+        //   message,
+        //   messageStatus,
+        //   createdAt,
+        //   ...partnerData,
+        // });
       } else if (!isSender && msg.messageStatus !== "read") {
-        const userData = users.get(partnerId);
-        users.set(partnerId, {
-          ...userData,
-          totalUnreadMessages: userData.totalUnreadMessages + 1,
+        const user = users.get(calculatedId);
+        users.set(calculatedId, {
+          ...user,
+          totalUnreadMessages: user.totalUnreadMessages + 1,
         });
       }
     });

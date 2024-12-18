@@ -61,7 +61,7 @@ function Main() {
       socket.current.on("msg-recieve", (data) => {
         dispatch({
           type: reducerCases.ADD_MESSSAGE,
-          newMessage: { ...data.message },
+          newMessage: { ...data.message ,},
         });
       });
 
@@ -86,7 +86,6 @@ function Main() {
       socket.current.on("video-call-rejected", () => {
         dispatch({ type: reducerCases.END_CALL });
       });
-
       socket.current.on("online-users", (onlineUsers) => {
         dispatch({ type: reducerCases.SET_ONLINE_USERS, onlineUsers });
       });
@@ -111,7 +110,7 @@ function Main() {
   return (
     <>
       {incomingVideoCall && <IncomingVideoCall />}
-      {incomingVoiceCall && <incomingVoiceCall />}
+      {incomingVoiceCall && <incomingCall />}
       {videoCall && (
         <div className="h-screen w-screen max-h-full overflow-hidden">
           <videoCall />
@@ -128,6 +127,7 @@ function Main() {
           {currentChatUser ? (
             <div className={messagesSearch ? "grid grid-cols-2" : "grid-cols-2"}>
               <Chat />
+              {console.log({messagesSearch})}
               {messagesSearch && <SearchMessages />}
             </div>
           ) : (

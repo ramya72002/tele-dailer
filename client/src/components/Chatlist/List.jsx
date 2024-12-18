@@ -3,7 +3,7 @@ import axios from "axios";
 import { GET_INITIAL_CONTACTS_ROUTE } from "axios";
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
-import ChatList from "./ChatList";
+import ChatLIstItem from "./ChatLIstItem";
 
 function List() {
   const [{ userInfo, userContacts, filteredContacts }, dispatch] = useStateProvider();
@@ -14,8 +14,8 @@ function List() {
         const {
           data: { users, onlineUsers },
         } = await axios.get(`${GET_INITIAL_CONTACTS_ROUTE}/${userInfo.id}`);
-        dispatch({type:reducerCases.SET_ONLINE_USERS, onlineUsers})
-        dispatch({type:reducerCases.SET_USER_CONTACTS, userContacts:user})
+        dispatch({type:reducerCases.SET_ONLINE_USERS, onlineUsers});
+        dispatch({type:reducerCases.SET_USER_CONTACTS, userContacts:users});
 
         
         // Dispatch data to state if needed
@@ -32,10 +32,12 @@ function List() {
   return (
     <div className="bg-search-input-container-background flex-auto overflow-auto max-h-full custom-scrollbar">
       {
-        filteredContacts && filteredContacts.length>0 ? 
-        (filteredContacts.map((contact)=> (
-          <ChatLIstItem data={contact} key={contact.id} />))) :
-           userContacts.map((contact)=> (
+        filteredContacts && filteredContacts.length >0 ? 
+        filteredContacts.map((contact) => (
+          <ChatLIstItem data={contact} key={contact.id} />
+        
+        )) :
+           userContacts.map((contact) => (
             <ChatLIstItem data={contact} key={contact.id} />))
       }
       

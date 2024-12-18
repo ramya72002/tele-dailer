@@ -11,7 +11,7 @@ function ChatLIstItem({ data, isContactsPage = false }) {
   const [{ userInfo, currentChatUser }, dispatch] = useStateProvider();
 
   const handleContactClick = () => {
-    if (currentChatUser?.id===data) {
+    if (!isContactsPage) {
       dispatch({
         type: reducerCases.CHANGE_CURRENT_CHAT_USER,
         user: {
@@ -51,7 +51,9 @@ function ChatLIstItem({ data, isContactsPage = false }) {
             <div>
               <span
                 className={`${
-                  data.totalUnreadMessages > 0 ? "text-icon-green" : "text-secondary"
+                  !data.totalUnreadMessages > 0 
+                  ?  "text-secondary"
+                  :"text-icon-green"
                 } text-sm`}
               >
                 {calculateTime(data.createdAt)}
@@ -60,7 +62,6 @@ function ChatLIstItem({ data, isContactsPage = false }) {
           )}
         </div>
 
-        {/* About Section */}
         <div className="flex border-b border-conversation-border pb-2 pt-1 p3-2">
           <div className="flex justify-between w-full">
             <span className="text-secondary line-clamp-1 text-sm">
@@ -68,10 +69,11 @@ function ChatLIstItem({ data, isContactsPage = false }) {
                 data?.about || "\u00A0"
               ) : (
                 <div
-                  className="flex items-center gap-1 max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[200px] xl:max-w-[300px]"
+                  className="flex items-center gap-1 max-w-[200px]
+                   sm:max-w-[250px] md:max-w-[300px] lg:max-w-[200px] xl:max-w-[300px]"
                 >
                   {data.senderId === userInfo.id && <MessageStatus messageStatus={data.messageStatus} />}
-                  {data.type === "text" && <span className="truncate">{data.messageStatus}</span>}
+                  {data.type === "text" && <span className="truncate">{data.message}</span>}
 
                   {data.type === "audio" && (
                     <span className="flex gap-1 items-center">
@@ -90,7 +92,8 @@ function ChatLIstItem({ data, isContactsPage = false }) {
               )}
             </span>
             {data.totalUnreadMessages > 0 && (
-              <span className="bg-icon-green px-[5px] rounded-full text-sm"> </span>
+              <span className="bg-icon-green px-[5px] rounded-full text-sm">
+                {data.totalUnreadMessages} </span>
             )}
           </div>
         </div>

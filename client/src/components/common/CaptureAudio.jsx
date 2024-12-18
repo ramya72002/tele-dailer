@@ -27,8 +27,10 @@ function CaptureAudio({ hide }) {
     let interval;
     if (isRecording) {
       interval = setInterval(() => {
-        setRecordingDuration((prev) => prev + 1);
-        setTotalDuration((prev) => prev + 1);
+        setRecordingDuration((prevDuration) =>{
+          setTotalDuration(prevDuration + 1);
+          return prevDuration+1;
+        } );
       }, 1000);
     }
     return () => clearInterval(interval);
@@ -52,13 +54,17 @@ function CaptureAudio({ hide }) {
     return () => wavesurfer.destroy();
   }, []);
 
+  useEffect(()=>{
+    if(waveform)handleStartRecording();
+
+  },[waveform]);
   // Start recording
   const handleStartRecording = () => {
     setRecordingDuration(0);
     setCurrentPlaybackTime(0);
     setTotalDuration(0);
     setIsRecording(true);
-    setRecordedAudio(nulll);
+    setRecordedAudio(null);
 
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -87,56 +93,39 @@ function CaptureAudio({ hide }) {
 
   // Stop recording
   const handleStopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      waveform.stop();
 
-    if (mediaRecorderRed.current && isRecording) {
-    
-    mediaRecorderRed.current.stop();
-    
-    setIsRecording(false);
-    
-    waveform.stop();
-    
-    const audioChunks = [];
-    
-  //   mediaRecorderRed.current.addEventListener("dataavailable", (event) => 
-  //     audioChunks.push(event.data); 
-  // });
-    
-    mediaRecorderRed.current.addEventListener("stop", () => {
-    
-    const audioBlob = new Blob (audioChunks, { type: "audio/mp3" });
-    
-    const audioFile = new File([audioBlob], "recording.mp3"); setRenderedAudio (audioFile);
-    
-    });
-    
+      const audioChunks = [];
+      mediaRecorderRef.current.addEventListener("dataavailable", (event) => {
+        audioChunks.push(event.data);
+      });
+
+
+      mediaRecorderRef.current.addEventListener("stop", () => {
+        const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
+        const audioFile = new File([audioBlob], "recording.mp3");
+        setRenderedAudio(audioFile);
+      });
     }
-    
-    };
+  };
 
-  //somthing missing here
+  // Update playback time
   useEffect(() => {
-
     if (recordedAudio) {
-    
-    const updatePlaybackTime = () => {
-    
-    setCurrentPlaybackTime(recordedAudio.currentTime);
-    
-    };
-    
-    recordedAudio.addEventListener("timeupdate", updatePlaybackTime);
-    
-    return () => {
-    
-    recordedAudio.removeEventListener("timeupdate", updatePlaybackTime)
-    
-    };
-    
-    
+      const updatePlaybackTime = () => {
+        setCurrentPlaybackTime(recordedAudio.currentTime);
+      };
+
+      recordedAudio.addEventListener("timeupdate", updatePlaybackTime);
+
+      return () => {
+        recordedAudio.removeEventListener("timeupdate", updatePlaybackTime);
+      };
     }
-    
-    }, [recordedAudio]);
+  }, [recordedAudio]);
 
   // Play recording
   const handlePlayRecording = () => {
@@ -221,11 +210,18 @@ function CaptureAudio({ hide }) {
         ) : null}
         <div className="w-60" ref={waveFormRef} hidden={isRecording} />
 
-        {recordedAudio && (
+        {recordedAudio && isPlaying && (
           <span>
-            {isPlaying ? formatTime(currentPlaybackTime) : formatTime(totalDuration)}
+            {formatTime(currentPlaybackTime)} 
           </span>
         )}
+        {recordedAudio && !isPlaying && (
+          <span>
+            {formatTime(totalDuration)}
+          </span>
+        )}
+        
+        
 
         <audio ref={audioRef} hidden />
       </div>

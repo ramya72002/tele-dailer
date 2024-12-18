@@ -63,7 +63,7 @@ function ChatHeader() {
         <div className="flex flex-col">
           <span className="text-primary-strong">{currentChatUser?.name}</span>
           <span className="text-secondary text-sm">
-            {onlineUsers.includes(currentChatUser.id) ? "online" : "offline"}
+            {/* {onlineUsers.includes(currentChatUser.id) ? "online" : "offline"} */}
           </span>
         </div>
       </div>
@@ -77,10 +77,11 @@ function ChatHeader() {
           className="text-panel-header-icon cursor-pointer text-xl"
           onClick={handleVideoCall}
         />
-        <BiSearchAlt2
+       <BiSearchAlt2
           className="text-panel-header-icon cursor-pointer text-xl"
           onClick={() => dispatch({ type: reducerCases.SET_MESSAGE_SEARCH })}
         />
+
         <BsThreeDotsVertical
           className="text-panel-header-icon cursor-pointer text-xl"
           onClick={showContextMenu}

@@ -17,7 +17,7 @@ function MessageBar() {
   const [{ userInfo, currentChatUser, socket }, dispatch] = useStateProvider();
   const [message, setMessage] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const EmojiPickerRef = useRef(null);
+  const emojiPickerRef = useRef(null);
   const [grabPhoto, setGrabPhoto] = useState(false);
   const [showAudioRecorder, setShowAudioRecorder] = useState(false);
 
@@ -60,7 +60,7 @@ function MessageBar() {
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (event.target.id !== "emoji-open") {
-        if (EmojiPickerRef.current && !EmojiPickerRef.current.contains(event.target)) {
+        if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
           setShowEmojiPicker(false);
         }
       }
@@ -83,12 +83,12 @@ function MessageBar() {
   const sendMessage = async () => {
     try {
       const { data } = await axios.post(ADD_MESSAGE_ROUTE, {
-        to: currentChatUser.id,
+        to: currentChatUser?.id,
         from: userInfo?.id,
         message,
       });
       socket.current.emit("send-msg", {
-        to: currentChatUser.id,
+        to: currentChatUser?.id,
         from: userInfo?.id,
         message: data.message,
       });
@@ -113,8 +113,10 @@ function MessageBar() {
       data.click();
 
       document.body.onfocus = () => {
-        setTimeout(() => {}, 1000);
-        setGrabPhoto(false);
+        setTimeout(() => {
+          setGrabPhoto(false);
+
+        }, 1000);
       };
     }
   }, [grabPhoto]);
@@ -132,7 +134,7 @@ function MessageBar() {
               onClick={handleEmojiModal}
             />
             {showEmojiPicker && (
-              <div className="absolute bottom-24 left-16 z-40" ref={EmojiPickerRef}>
+              <div className="absolute bottom-24 left-16 z-40" ref={emojiPickerRef}>
                 <EmojiPicker onEmojiClick={handleEmojiClick} theme="dark" />
               </div>
             )}
@@ -177,7 +179,7 @@ function MessageBar() {
 
       {grabPhoto && <PhotoPicker onChange={photoPickerChange} />}
 
-      {showAudioRecorder && <CaptureAudio onChange={setShowAudioRecorder} />}
+      {showAudioRecorder && <CaptureAudio hide={setShowAudioRecorder} />}
     </div>
   );
 }

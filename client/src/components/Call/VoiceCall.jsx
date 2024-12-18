@@ -1,6 +1,6 @@
 import { useStateProvider } from "@/context/StateContext";
 import dynamic from "next/dynamic";
-import React, { useEffect } from "react";
+import React, { useEffect ,useState} from "react";
 
 const Container = dynamic(() => import("./Container"), { ssr: false });
 
