@@ -12,6 +12,8 @@ import Chat from "./Chat/Chat";
 import { io } from "socket.io-client";
 import SearchMessages from "./Chat/SearchMessages";
 import IncomingVideoCall from "./common/IncomingVideoCall";
+import VideoCall from "./Call/VideoCall";
+import VoiceCall from "./Call/VoiceCall";
 import { HOST } from "@/utils/ApiRoutes";
 
 function Main() {
@@ -113,12 +115,12 @@ function Main() {
       {incomingVoiceCall && <incomingCall />}
       {videoCall && (
         <div className="h-screen w-screen max-h-full overflow-hidden">
-          <videoCall />
+          <VideoCall />
         </div>
       )}
       {voiceCall && (
         <div className="h-screen w-screen max-h-full overflow-hidden">
-          <voiceCall />
+          <VoiceCall />
         </div>
       )}
       {!videoCall && !voiceCall && (
