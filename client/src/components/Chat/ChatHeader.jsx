@@ -84,7 +84,7 @@ function ChatHeader() {
 
         <BsThreeDotsVertical
           className="text-panel-header-icon cursor-pointer text-xl"
-          onClick={showContextMenu}
+          onClick={(e)=>showContextMenu(e)}
           id="context-opener"
         />
         {isContextMenuVisible && (

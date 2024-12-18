@@ -1,9 +1,10 @@
 import { useStateProvider } from "@/context/StateContext";
+import { reducerCases } from "@/context/constants";
 import Image from "next/image";
 import React from "react";
 
 function IncomingVideoCall() {
-  const [{ incomingVideoCall }, dispatch] = useStateProvider();
+  const [{ incomingVideoCall,socket }, dispatch] = useStateProvider();
 
   const acceptCall = () => {
     dispatch({
@@ -20,7 +21,7 @@ function IncomingVideoCall() {
   };
 
   const rejectCall = () => {
-    socket.current.emit("reject-video-call", { id: incomingVideoCall.id });
+    socket.current.emit("reject-video-call", { from: incomingVideoCall.id });
 
     dispatch({
       type: reducerCases.END_CALL,

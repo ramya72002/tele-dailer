@@ -49,7 +49,7 @@ function Container({ data }) {
         );
         setZgVar(zg);
 
-        zg.on("roomStreamUpdate", async (roomID, updateType, streamList) => {
+        zg.on("roomStreamUpdate", async (roomID, updateType, streamList,extendedData) => {
           if (updateType === "ADD") {
             const rmVideo = document.getElementById("remote-video");
             const vd = document.createElement(data.callType === "video" ? "video" : "audio");
@@ -82,13 +82,15 @@ function Container({ data }) {
         await zg.loginRoom(
           data.roomId.toString(),
           token,
-          { userId: userInfo.id.toString(), userName: userInfo.name },
+          { userID: userInfo.id.toString(), userName: userInfo.name },
           { userUpdate: true }
         );
 
         const localStream = await zg.createStream({
-          camera: {},
-          video: data.callType === "video",
+          camera: {
+            audio:true,
+            video: data.callType === "video"?true:false,
+          },
         });
 
         const localVideo = document.getElementById("local-audio");
@@ -100,6 +102,8 @@ function Container({ data }) {
         videoElement.playsInline = true;
 
         localVideo.appendChild(videoElement);
+        const td=document.getElementById("video-local-zego");
+        td.srcObject=localStream;
 
         const streamID = "123" + Date.now();
         setPublishStream(streamID);

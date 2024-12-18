@@ -213,7 +213,7 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
       }
     });
 
-    if (messageStatusChange.length > 0) {
+    if (messageStatusChange.length) {
       await prisma.messages.updateMany({
         where: { id: { in: messageStatusChange } },
         data: { messageStatus: "delivered" },
