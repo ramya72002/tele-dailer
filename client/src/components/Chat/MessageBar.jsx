@@ -45,7 +45,7 @@ function MessageBar() {
         });
 
         dispatch({
-          type: reducerCases.ADD_MESSAGE,
+          type: reducerCases.ADD_MESSSAGE,
           newMessage: {
             ...response.data.message,
           },
@@ -94,7 +94,7 @@ function MessageBar() {
       });
 
       dispatch({
-        type: reducerCases.ADD_MESSAGE,
+        type: reducerCases.ADD_MESSSAGE,
         newMessage: {
           ...data.message,
         },

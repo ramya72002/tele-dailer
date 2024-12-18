@@ -48,13 +48,13 @@ const reducer=(state,action)=>{
         case reducerCases.SET_SOCKET:
             return {
                 ...state,
-                socket:action.socket,
+                socket: action.socket,
             };
 
-        case reducerCases.ADD_MESSAGE:
+        case reducerCases.ADD_MESSSAGE:
             return {
                 ...state,
-                message:[...state.messages, action.newMessage],//temp
+                messages:[...state.messages, action.newMessage],//temp
             };
     
         case reducerCases.SET_MESSAGE_SEARCH:

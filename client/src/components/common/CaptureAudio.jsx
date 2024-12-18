@@ -187,7 +187,7 @@ function CaptureAudio({ hide }) {
         });
 
         dispatch({
-          type: reducerCases.ADD_MESSAGE,
+          type: reducerCases.ADD_MESSSAGE,
           newMessage: response.data.message,
           fromSelf: true,
         });
