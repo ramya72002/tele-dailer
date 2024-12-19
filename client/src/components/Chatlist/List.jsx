@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import axios from "axios";
-import { GET_INITIAL_CONTACTS_ROUTE } from "axios";
+import { GET_INITIAL_CONTACTS_ROUTE } from "@/utils/ApiRoutes";
 import { useStateProvider } from "@/context/StateContext";
 import { reducerCases } from "@/context/constants";
 import ChatLIstItem from "./ChatLIstItem";
@@ -24,26 +24,22 @@ function List() {
         console.error(err);
       }
     };
-    // if (userInfo?.id) {
+    if (userInfo?.id) {
       getContacts();
-    // }
+    }
   }, [userInfo]);
 
   return (
     <div className="bg-search-input-container-background flex-auto overflow-auto max-h-full custom-scrollbar">
-      {/* {
-        filteredContacts && filteredContacts.length >0 ? 
+      {filteredContacts && filteredContacts.length > 0 ? (
         filteredContacts.map((contact) => (
           <ChatLIstItem data={contact} key={contact.id} />
-        
-        )) : */}
-        {
-           userContacts.map((contact) => 
-            <ChatLIstItem data={contact} key={contact.id} />)
-        }
-           {/* } */}
-      {/* } */}
-      
+        ))
+      ) : userContacts && userContacts.length > 0 ? (
+        userContacts.map((contact) => <ChatLIstItem data={contact} key={contact.id} />)
+      ) : (
+        <div className="text-center text-gray-500 mt-4">No contacts available</div>
+      )}
     </div>
   );
 }
