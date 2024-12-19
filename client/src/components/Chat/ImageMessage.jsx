@@ -25,7 +25,7 @@ function ImageMessage({message}) {
         {
           message.senderId === userInfo.id && (
             <MessageStatus
-               MessageStatus={message.messageStatus} 
+               messageStatus={message.messageStatus} 
           />
           )
         }

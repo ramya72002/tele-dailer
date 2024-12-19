@@ -20,7 +20,7 @@ function SearchMessages() {
     } else {
       setSearchedMessages([]);
     }
-  }, [searchTerm, messages]);
+  }, [searchTerm]);
 
   const calculateTime = (createdAt) => {
     const date = new Date(createdAt);

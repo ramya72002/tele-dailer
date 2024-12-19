@@ -57,7 +57,7 @@ function Main() {
       socket.current.emit("add-user", userInfo.id);
       dispatch({ type: reducerCases.SET_SOCKET, socket });
     }
-  }, [userInfo, dispatch]);
+  }, [userInfo]);
 
   useEffect(() => {
     if (socket.current && !socketEvent) {
@@ -95,7 +95,7 @@ function Main() {
 
       setSocketEvent(true);
     }
-  }, [socketEvent, dispatch]);
+  }, [socket.current]);
 
   useEffect(() => {
     const getMessages = async () => {
@@ -130,7 +130,6 @@ function Main() {
           {currentChatUser ? (
             <div className={messagesSearch ? "grid grid-cols-2" : "grid-cols-2"}>
               <Chat />
-              {console.log({messagesSearch})}
               {messagesSearch && <SearchMessages />}
             </div>
           ) : (

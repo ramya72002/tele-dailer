@@ -137,7 +137,7 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
           include: { receiver: true, sender: true },
           orderBy: { createdAt: "desc" },
         },
-        receivedMessages: {
+        recievedMessages: {
           include: { receiver: true, sender: true },
           orderBy: { createdAt: "desc" },
         },
@@ -146,7 +146,7 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
 
     const messages = [
       ...user.sentMessages,
-      ...user.receivedMessages,
+      ...user.recievedMessages,
     ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     const users = new Map();
@@ -164,7 +164,7 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
         createdAt,senderId,receiverId,
       }=msg;
       // const { id, type, message, messageStatus, createdAt } = msg;
-      if (!users.has(calculatedId)) {
+      if (!users.get(calculatedId)) {
        
         let user={
           messageId:id,
@@ -190,21 +190,7 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
 
         }
         users.set(calculatedId,{...user});
-        // const partnerData = isSender
-        //   ? { ...msg.receiver, totalUnreadMessages: 0 }
-        //   : {
-        //       ...msg.sender,
-        //       totalUnreadMessages: messageStatus !== "read" ? 1 : 0,
-        //     };
-        // users.set(calculatedId, {
-        //   id,
-        //   type,
-        //   message,
-        //   messageStatus,
-        //   createdAt,
-        //   ...partnerData,
-        // });
-      } else if (!isSender && msg.messageStatus !== "read") {
+      } else if (!isSender && messageStatus !== "read") {
         const user = users.get(calculatedId);
         users.set(calculatedId, {
           ...user,
@@ -216,7 +202,9 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
     if (messageStatusChange.length) {
       await prisma.messages.updateMany({
         where: { id: { in: messageStatusChange } },
-        data: { messageStatus: "delivered" },
+        data: { messageStatus: "delivered",
+
+        },
       });
     }
 
