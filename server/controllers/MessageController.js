@@ -130,6 +130,7 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
     const userId = req.params.from;
     const prisma = getPrismaInstance();
 
+    // Fetch user data including sent and received messages
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -137,17 +138,20 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
           include: { receiver: true, sender: true },
           orderBy: { createdAt: "desc" },
         },
-        recievedMessages: {
+        receivedMessages: {
           include: { receiver: true, sender: true },
           orderBy: { createdAt: "desc" },
         },
       },
     });
 
-    const messages = [
-      ...user.sentMessages,
-      ...user.recievedMessages,
-    ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Merge and sort messages by creation date (descending)
+    const messages = [...user.sentMessages, ...user.receivedMessages];
+    messages.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     const users = new Map();
     const messageStatusChange = [];
@@ -156,55 +160,63 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
       const isSender = msg.senderId === userId;
       const calculatedId = isSender ? msg.receiverId : msg.senderId;
 
+      // Collect message IDs where status is "sent" for bulk update
       if (msg.messageStatus === "sent") {
         messageStatusChange.push(msg.id);
       }
-      const{id,
-        type,message,messageStatus,
-        createdAt,senderId,receiverId,
-      }=msg;
-      // const { id, type, message, messageStatus, createdAt } = msg;
+
+      const {
+        id,
+        type,
+        message,
+        messageStatus,
+        createdAt,
+        senderId,
+        receiverId,
+      } = msg;
+
+      // Check if user is already added to the Map
       if (!users.get(calculatedId)) {
-       
-        let user={
-          messageId:id,
+        let user = {
+          messageId: id,
           type,
           message,
           messageStatus,
           createdAt,
           senderId,
           receiverId,
-        }
-        if(isSender){
-          user={
+        };
+
+        // Add additional details based on whether the user is the sender or receiver
+        if (isSender) {
+          user = {
             ...user,
             ...msg.receiver,
-            totalUnreadMessages:0,
+            totalUnreadMessages: 0,
           };
-        }else{
-          user={
+        } else {
+          user = {
             ...user,
             ...msg.sender,
-            totalUnreadMessages:messageStatus!=="read"?1:0,
+            totalUnreadMessages: messageStatus !== "read" ? 1 : 0,
           };
-
         }
-        users.set(calculatedId,{...user});
+
+        users.set(calculatedId, { ...user });
       } else if (!isSender && messageStatus !== "read") {
-        const user = users.get(calculatedId);
+        const existingUser = users.get(calculatedId);
         users.set(calculatedId, {
-          ...user,
-          totalUnreadMessages: user.totalUnreadMessages + 1,
+          ...existingUser,
+          totalUnreadMessages: existingUser.totalUnreadMessages + 1,
         });
       }
     });
 
+    // Update message statuses to "delivered" for the collected IDs
     if (messageStatusChange.length) {
       await prisma.messages.updateMany({
         where: { id: { in: messageStatusChange } },
-        data: { messageStatus: "delivered",
-
-        },
+        data: { messageStatus: "delivered" },
       });
     }
 
@@ -216,4 +228,5 @@ export const getInitialContactsWithMessages = async (req, res, next) => {
     next(err);
   }
 };
+
 
