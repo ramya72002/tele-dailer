@@ -33,7 +33,12 @@ function Login() {
           dispatch({ type: reducerCases.SET_NEW_USER, newUser: true });
           dispatch({
             type: reducerCases.SET_USER_INFO,
-            userInfo: { name, email, profileImage, status: "" },
+            userInfo: { 
+              name, 
+              email, 
+              profileImage, 
+              status: "" 
+            },
           });
           router.push("/onboarding");
         } else {
@@ -46,7 +51,13 @@ function Login() {
           } = data.data;
           dispatch({
             type: reducerCases.SET_USER_INFO,
-            userInfo: { id, name, email, profileImage, status },
+            userInfo: { 
+              id,
+               name,
+                email,
+                 profileImage, 
+                 status,
+                },
           });
           router.push("/");
         }

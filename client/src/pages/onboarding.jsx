@@ -6,6 +6,7 @@ import { ONBOARD_USER_ROUTE } from "@/utils/ApiRoutes";
 import Avatar from "@/components/common/Avatar";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { reducerCases } from "@/context/constants";
 
 function onboarding() {
   const router = useRouter();
@@ -18,6 +19,7 @@ function onboarding() {
     if (!newUser && !userInfo?.email) router.push("/login");
     else if (!newUser && userInfo?.email) router.push("/");
   }, [newUser, userInfo, router]);
+  
 
   const onboardUserHandler = async () => {
     if (validateDetails()) {
@@ -31,16 +33,16 @@ function onboarding() {
         });
         if (data.status) {
           dispatch({ type: reducerCases.SET_NEW_USER, newUser: false });
-          dispatch({
-            type: reducerCases.SET_USER_INFO,
-            userInfo: {
-              id: data.user.id,
-              name,
-              email,
-              profileImage: image,
-              status: about,
-            },
-          });
+dispatch({
+  type: reducerCases.SET_USER_INFO,
+  userInfo: {
+    id: data.user.id,
+    name,
+    email,
+    profileImage: image,
+    status: about,
+  },
+});
           router.push("/");
         }
       } catch (err) {
